@@ -1,0 +1,148 @@
+~~~~~~~~~~~~~~~~~~~~~~~~
+Pipelined MIPS Simulator
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+AUTHOR
+======
+	
+	1.
+	NTHU 
+	Student ID: 		1022002s 
+	Name: 		        Ting Hsun, Lin
+	
+INTRODUCTION
+============
+
+	 	This pipelined MIPS simulator inputs "dimage.bin" and "iimage.bin"
+	and outputs "snapshot.rpt" and "error_dump.rpt" where "dimage.bin" is the binary code of data of 1KB in big-endian,  "iimage.bin" is the binary code of instructions of 1KB in big-endian, "snapshot.rpt" is the result of simulating, and "error_dump.rpt" contains the errors.(if occurred)
+
+	 	Unlike last one (Simple MIPS simulator), which is basically single cycle 
+	simulation, this pipelined MIPS simulator is pipelined simulation.
+	 	The difference between single cycle and pipeline is that pipeline has 5 stages
+	(IF -> ID -> EXE -> DM -> WB) in each cycle, which is faster but more complicated.
+	 	This pipelined MIPS simulator is a simpler version than the real one.
+	We simulate some MIPS instructions (all 32-bit) on this simulator including following opcodes:
+	 1. R-type: 
+	 	"add", "sub", "and", "or", "xor", "nor", "nand", "slt",
+		"sll", "srl", "sra", "jr".
+	 2. I-type: 
+	 	"addi", "lw", "lh", "lhu", "lb", "lbu", "sw", "sh",
+		"sb", "lui", "andi", "ori", "nori", "slti", "beq", "bne".
+	 3. J-type:
+	 	"j", "jal".
+	 4. S-type:
+	 	"halt".
+
+
+	 We realized some technique on this one, including:
+	  1. Stall detection
+	  2. Forwarding (or bypassing) detection
+	  3. flush detection
+	 But no branch prediction.
+
+	 We also handle some errors including following:
+	  1. Binary files cannot be read in. (terminate)
+	  2. Cannot allocate dynamic memory. (terminate)
+	  3. Write $0 error in cycle. 
+	  	 (skip this cycle and continue to simulate)
+	  4. Number overflow in cycle.
+	     (Still simulate)
+	  5. D/I-Memory address overflow in cycle. (terminate)
+	  6. D/I-Memory misalignment error in cycle. (terminate)
+	 If any one of all above errors occur we will warn you. (1~2 on screen, 3~6 in error_dump.rpt)
+
+USING METHOD
+============
+
+	 	Untar the "1022002s_02.tar.gz" in your environment, make, and then 
+	execute.
+	 	If you are in Unix or Cygwin this kind of Unix like environment
+	in Windows, type the following commands:
+
+	% tar zxvf 1022002s_02.tar.gz
+	% cd 1022002s_02/simulator
+	% make
+	% ./pipeline
+	(or "%./pipeline.exe" in some environments like Windows)
+
+	and it will generate "snapshot.rpt" and  "error_dump.rpt".
+	Note that you should have the "dimage.bin" and "iimage.bin" in the same directory as your "pipeline".
+
+		There are some test cases in the folder "testcase" you can try.
+	 	You can type "diff snapshot.rpt ~/Correct/snapshot.rpt" to see if 
+	they are identical. (where "~/Correct/snapshot.rpt" is the path of the correct result simulated by TAs golden simulator) 
+
+INPUT FORMAT
+============
+	 	As I said, your "dimage.bin" and "iimage.bin" are the binary code 
+	of data and instructions of 1KB in big-endian.
+	 	The format of "dimage.bin" should be the order of following:
+
+				the starting address of $sp (4 Bytes) --> 
+				the amount of words of following data (4 Bytes) --> 
+				the body of data (n bytes)
+	 
+	 The format of "iimage.bin" should be the order of following:
+
+				the starting address of PC (4 Bytes) --> 
+				the amount of words of following instructions (4 Bytes) --> 
+				the body of instructions (n bytes)
+	 
+OUTPUT FORMAT
+============
+	
+	snapshot.rpt:
+
+		Show the state of registers after last cycle be done and what the next instruction will be execute 
+	in every stages of every cycle.
+
+	e.g.
+					cycle 44
+					$00: 0x00000000
+					$01: 0x00000400
+					$02: 0xFFFFABCD
+					$03: 0xCDCDABCD
+					$04: 0xCD000000
+					$05: 0xCD00ABCD
+					$06: 0xFFFFABCD
+					$07: 0x0000ABCD
+					$08: 0xABCD0000
+					$09: 0x00CD0000
+					$10: 0xFFFF8000
+					$11: 0x00000000
+					$12: 0x00000000
+					$13: 0x00000000
+					$14: 0x000000CD
+					$15: 0xFFFFFFCD
+					$16: 0x00000000
+					$17: 0x00000000
+					$18: 0x00000000
+					$19: 0x00000000
+					$20: 0x00000000
+					$21: 0x00000000
+					$22: 0x00000000
+					$23: 0x00000000
+					$24: 0x00000000
+					$25: 0x00000000
+					$26: 0x00000000
+					$27: 0x00000000
+					$28: 0x00000000
+					$29: 0x00000000
+					$30: 0x00000000
+					$31: 0x00000000
+					PC: 0x000000A8
+					IF: 0x214A0007 to_be_flushed
+					ID: BNE fwd_EX-DM_rt_$10
+					EX: SLL fwd_DM-WB_rt_$11
+					DM: AND
+					WB: ADDI
+
+	error_dump.rpt:
+
+		Show the errors found in every cycle.
+
+	e.g.
+					Write $0 error in cycle: 353
+					Address overflow in cycle: 353
+					Misalignment error in cycle: 353
+					Number overflow in cycle: 353
