@@ -5,10 +5,7 @@ Pipelined MIPS Simulator
 AUTHOR
 ======
 	
-	1.
-	NTHU 
-	Student ID: 		1022002s 
-	Name: 		        Ting Hsun, Lin
+      Ting Hsun, Lin
 	
 INTRODUCTION
 ============
@@ -54,13 +51,12 @@ INTRODUCTION
 USING METHOD
 ============
 
-	 	Untar the "1022002s_02.tar.gz" in your environment, make, and then 
-	execute.
+	
 	 	If you are in Unix or Cygwin this kind of Unix like environment
 	in Windows, type the following commands:
 
-	% tar zxvf 1022002s_02.tar.gz
-	% cd 1022002s_02/simulator
+
+	% cd /simulator
 	% make
 	% ./pipeline
 	(or "%./pipeline.exe" in some environments like Windows)
