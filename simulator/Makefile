@@ -1,5 +1,5 @@
 #
-# Makefile for Architecture Project 1
+# Makefile for pipeline_simulator
 #
 
 # if you want to use debugger, add -g to CFLAGS and LDFLAGS
